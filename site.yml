@@ -1,0 +1,11 @@
+---
+## This playbook contructed for RED workstation deployments.
+## This Playbook followes the "Red Ubuntu 20.04.03 Installation" made by Igal.
+## This playbook is valid for both Debian & RPM distributions.
+
+- name: RED workstation deployment
+  hosts: all
+  become: true
+
+  roles:
+    - red
