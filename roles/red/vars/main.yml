@@ -1,0 +1,19 @@
+---
+# vars file for red
+
+packages:
+  - openssh-server
+  - cifs-utils
+  - realmd
+  - libnss-sss
+  - libpam
+  - sssd
+  - sssd-tools
+  - adcli
+  - samba-common-bin
+  - oddjob
+  - oddjob-mkhomedir
+  - packagekit
+
+username: xanita
+password: nsoadmin

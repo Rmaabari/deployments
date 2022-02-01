@@ -1,0 +1,73 @@
+---
+# tasks file for RED workstations deployment
+
+- name: Update and upgrade apt packages
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Update and upgrade apt packages
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Update Red Hat Enterprise Linux & CentOS packages
+  yum:
+    name: "*"
+    state: latest
+  when: ansible_distribution == "CentOS" or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Creating user {{ username }} with admin access
+  user: 
+    name: "{{ username }}"
+    password: "{{ password | password_hash('sha512','A512')}}"
+    groups: sudo
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Creating user {{ username }} with admin access
+  user: 
+    name: "{{ username }}"
+    password: "{{ password | password_hash('sha512','A512')}}"
+    groups: wheel
+  when: ansible_distribution == "CentOS" or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: install requrired packages
+  apt:
+    name: "{{ item }}"
+    state: present 
+  loop: "{{ packages }}"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: install requrired packages
+  yum:
+    name: "{{ item }}"
+    state: present 
+  loop: "{{ packages }}"
+  when: ansible_distribution == "CentOS" or ansible_distribution == 'Red Hat Enterprise Linux'
+  ignore_errors: true
+
+- name: Make a copy of /etc/apt/apt.conf/20auto-upgrades 
+  copy:
+    src: /etc/apt/apt.conf/20auto-upgrades
+    dest: /etc/apt/apt.conf/20auto-upgrades.orig
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name:
+  lineinfile:
+    path: /etc/apt/apt.conf/20auto-upgrades
+    regexp: '^APT::Periodic::Update-Package-Lists "1"'
+    line: APT::Periodic::Unattended-Upgrade "0"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name:
+  lineinfile:
+    path: /etc/apt/apt.conf/20auto-upgrades
+    regexp: '^APT::Periodic::Unattended-upgarde "1"'
+    line: APT::Periodic::Unattended-Upgrade "0"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
